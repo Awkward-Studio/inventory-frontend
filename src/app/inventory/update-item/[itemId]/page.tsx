@@ -1,6 +1,6 @@
 "use client";
 
-import ProductAPI from "@/backend/api";
+import { productAPI } from "@/backend/api";
 import React, { useEffect, useState } from "react";
 
 import { Product } from "@/lib/types";
@@ -38,7 +38,7 @@ const EditProductPage = ({
 
       setLoading(true);
       try {
-        const productData = await ProductAPI.getProductById(itemId);
+        const productData = await productAPI.getProductById(itemId);
         setOriginalProduct(productData);
         setProduct(productData);
       } catch (err) {
@@ -65,7 +65,7 @@ const EditProductPage = ({
 
     setLoading(true);
     try {
-      await ProductAPI.editProduct(itemId, product);
+      await productAPI.editProduct(itemId, product);
       alert("Product updated successfully!");
       router.push("/inventory");
     } catch (err) {
@@ -139,9 +139,9 @@ const EditProductPage = ({
             <label className="block text-sm font-medium mb-1">Supplier</label>
             <input
               type="text"
-              value={product.supplier || ""}
+              value={product.vendorName || ""}
               onChange={(e) =>
-                setProduct({ ...product, supplier: e.target.value })
+                setProduct({ ...product, vendorName: e.target.value })
               }
               className="border border-gray-300 rounded-md p-2 w-full"
             />
@@ -150,9 +150,9 @@ const EditProductPage = ({
             <label className="block text-sm font-medium mb-1">Location</label>
             <input
               type="text"
-              value={product.location || ""}
+              value={product.itemLocation || ""}
               onChange={(e) =>
-                setProduct({ ...product, location: e.target.value })
+                setProduct({ ...product, itemLocation: e.target.value })
               }
               className="border border-gray-300 rounded-md p-2 w-full"
             />

@@ -1,10 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Product } from "@/lib/types";
+import { OrderCard, Product, CurrentOrderPart } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import ProductAPI from "@/backend/api";
+import { productAPI } from "@/backend/api";
 
 import {
   Dialog,
@@ -53,7 +53,7 @@ export const productColumns: ColumnDef<Product>[] = [
         setIsButtonLoading(true);
 
         try {
-          await ProductAPI.deleteProduct(row.original.id);
+          await productAPI.deleteProduct(row.original.id);
           // Optionally, refresh the data or navigate after deletion
           window.location.reload();
         } catch (error) {
@@ -115,5 +115,102 @@ export const productColumns: ColumnDef<Product>[] = [
         </div>
       );
     },
+  },
+];
+
+export const orderCardColumns: ColumnDef<OrderCard>[] = [
+  {
+    accessorKey: "order_number",
+    header: "Order No.",
+  },
+  {
+    accessorKey: "customer_name",
+    header: "Customer Name",
+  },
+  {
+    accessorKey: "customer_phone",
+    header: "Phone",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created At",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("created_at"));
+      return <div>{date.toLocaleString()}</div>;
+    },
+  },
+];
+
+export const osrderPartsColumns: ColumnDef<any>[] = [
+  {
+    accessorKey: "partName",
+    header: "Part Name",
+  },
+  {
+    accessorKey: "partNumber",
+    header: "Part Number",
+  },
+  {
+    accessorKey: "mrp",
+    header: "MRP",
+  },
+  {
+    accessorKey: "quantity",
+    header: "Quantity",
+  },
+  {
+    accessorKey: "discountPercentage",
+    header: "Discount %",
+  },
+  {
+    accessorKey: "total_amount",
+    header: "Amount",
+  },
+];
+
+export const orderPartsColumns: ColumnDef<CurrentOrderPart>[] = [
+  {
+    accessorKey: "part_name",
+    header: "Part Name",
+  },
+  {
+    accessorKey: "part_number",
+    header: "Part Number",
+  },
+  {
+    accessorKey: "hsn",
+    header: "HSN",
+  },
+
+  {
+    accessorKey: "gst",
+    header: "GST",
+    cell: ({ row }) => {
+      const gst: number = row.getValue("gst");
+      return <div>{gst}%</div>;
+    },
+  },
+  {
+    accessorKey: "mrp",
+    header: "MRP",
+    cell: ({ row }) => {
+      const price: number = row.getValue("mrp");
+      return <div>&#8377;{price}</div>;
+    },
+  },
+  {
+    accessorKey: "quantity",
+    header: "Quantity",
+  },
+  {
+    accessorKey: "discount",
+    header: "Discount %",
+  },
+  {
+    accessorKey: "total_amount",
   },
 ];

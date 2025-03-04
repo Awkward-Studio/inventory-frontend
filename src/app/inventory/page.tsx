@@ -7,7 +7,7 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { productColumns } from "@/lib/column-definitions";
 import { Product } from "@/lib/types";
-import ProductAPI from "@/backend/api";
+import { productAPI } from "@/backend/api";
 
 type Props = {};
 
@@ -18,7 +18,7 @@ export default function ProductsPage() {
   const fetchProducts = async (filters = {}) => {
     setLoading(true);
     try {
-      const data = await ProductAPI.getProducts(filters);
+      const data = await productAPI.getProducts(filters);
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
