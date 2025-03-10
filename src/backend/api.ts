@@ -196,15 +196,33 @@ class OrderAPI {
   }
 
   /**
-   * Search products by name
+   * Send OTP to customer for order verification
    */
-  async searchProducts(filters: { search?: string }): Promise<Product[]> {
+  async sendOTP(orderId: string): Promise<any> {
     try {
-      const response = await axios.get(`${this.baseURL}/products/`, { params: filters });
+      const response = await axios.post(`${this.baseURL}/orders/send-otp/`, {
+        order_id: orderId
+      });
       return response.data;
     } catch (error) {
-      console.error("Failed to search products!", error);
-      return [];
+      console.error("Failed to send OTP!", error);
+      return { error: "Failed to send OTP" };
+    }
+  }
+
+  /**
+   * Verify OTP and mark order as completed
+   */
+  async verifyOTP(orderId: string, otp: string): Promise<any> {
+    try {
+      const response = await axios.post(`${this.baseURL}/orders/verify-otp/`, {
+        order_id: orderId,
+        otp: otp
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to verify OTP!", error);
+      return { error: "Failed to verify OTP" };
     }
   }
 }
