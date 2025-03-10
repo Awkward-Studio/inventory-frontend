@@ -24,6 +24,7 @@ export interface Product {
   purchaseOrderId?: string;
   lastUpdatedDate?: string; // ISO 8601 Date string
   warrantyPeriod?: string;
+  media?: ProductMedia[];
   created_at?: string; // ISO 8601 Date string
   updated_at?: string; // ISO 8601 Date string
 }
@@ -51,6 +52,7 @@ export interface OrderCard {
   customer_phone: string;
   customer_gst: string;
   progress_status: number;
+  otp_generated_at?: string;
   status: string;
   created_at: string;
   updated_at: string;
@@ -108,4 +110,12 @@ export interface CurrentOrderPart {
 
   discount?: number;
   discountAmt?: number;
+}
+
+export interface ProductMedia {
+  id: string; // UUID of the media file
+  product: string; // Product ID (Foreign Key)
+  media_type: "image" | "video"; // Defines if it's an image or video
+  appwrite_file_id: string; // Appwrite Storage File ID
+  created_at?: string; // ISO 8601 timestamp
 }

@@ -1,5 +1,7 @@
 import axios from "axios";
-import { Product, OrderCard, OrderPart, CurrentOrderPart } from "@/lib/types";
+import { Product, OrderCard, OrderPart, CurrentOrderPart, ProductMedia } from "@/lib/types";
+import storage from "./appwriteClient";
+import { ID } from "appwrite";
 
 // API interface class for Products
 class ProductAPI {
@@ -282,6 +284,124 @@ class InvoiceAPI {
   }
 }
 
+class MediaAPI {
+  private baseURL: string;
+
+  constructor() {
+    this.baseURL = "http://127.0.0.1:8000/api"; // Replace with your backend API base URL
+  }
+
+  /**
+   * Fetch all media files
+   */
+  async getAllMedia(): Promise<ProductMedia[]> {
+    try {
+      const response = await axios.get(`${this.baseURL}/products/media/`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch media!", error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetch media files for a specific product
+   */
+  async getMediaByProduct(productId: string): Promise<ProductMedia[]> {
+    try {
+      const response = await axios.get(`${this.baseURL}/products/${productId}/media/`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch media for product!", error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetch media by ID
+   */
+  async getMediaById(mediaId: string): Promise<any> {
+    try {
+      const response = await axios.get(`${this.baseURL}/products/media/${mediaId}/`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch media by ID!", error);
+      return [];
+    }
+  }
+
+  /**
+   * Upload file to Appwrite Storage
+   */
+  async uploadFileToAppwriteStorage(file: File): Promise<any> {
+    try {
+      const response = await storage.createFile("67cec8b9000542d85629", ID.unique(), file);
+      return response.$id; // Appwrite File ID
+    } catch (error) {
+      console.error("Failed to upload file to Appwrite", error);
+      return null;
+    }
+  }
+
+  /**
+   * Create a new media file entry for a product
+   */
+  async uploadMediaObjectToDjango(productId: string, mediaData: Partial<ProductMedia>): Promise<any> {
+    try {
+      const response = await axios.post(
+        `${this.baseURL}/products/${productId}/media/create/`,
+        mediaData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response;
+    } catch (error) {
+      console.error("Failed to create media!", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Partially Update a media file entry (PATCH)
+   */
+  async updateMedia(mediaId: string, updatedData: Partial<ProductMedia>): Promise<any> {
+    try {
+      const response = await axios.patch(
+        `${this.baseURL}/products/media/${mediaId}/update/`,
+        updatedData
+      );
+      return response;
+    } catch (error) {
+      console.error("Failed to partially update media!", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a media file entry
+   */
+  async deleteMedia(mediaId: string): Promise<any> {
+    try {
+      const mediaResponse = await this.getMediaById(mediaId);
+      const fileId = mediaResponse.appwrite_file_id;
+
+      if (!fileId) {
+        throw new Error("Appwrite file ID not found!");
+      }
+
+      // Delete the file from Appwrite Storage
+      await storage.deleteFile("67cec8b9000542d85629", fileId);
+      console.log(`Deleted file ${fileId} from Appwrite`);
+
+      const res = await axios.delete(`${this.baseURL}/products/media/${mediaId}/delete/`);
+      return res;
+
+    } catch (error) {
+      console.error("Failed to delete media!", error);
+    }
+  }
+}
+
+export const mediaAPI = new MediaAPI();
 export const productAPI = new ProductAPI();
 export const orderAPI = new OrderAPI();
 export const invoiceAPI = new InvoiceAPI();
