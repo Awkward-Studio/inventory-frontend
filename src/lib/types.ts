@@ -116,6 +116,8 @@ export interface ProductMedia {
   id: string; // UUID of the media file
   product: string; // Product ID (Foreign Key)
   media_type: "image" | "video"; // Defines if it's an image or video
-  appwrite_file_id: string; // Appwrite Storage File ID
+  appwrite_file_id?: string; // Appwrite Storage File ID
+  preview_url?: string; // URL to the media file
+  thumbnail_url?: string; // URL to the thumbnail of the media file
   created_at?: string; // ISO 8601 timestamp
 }
